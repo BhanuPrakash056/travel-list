@@ -1,92 +1,221 @@
-import {  useState } from "react";
-import Logo from "./components/Logo";
-import Form from "./components/Form";
-import PackingList from "./components/PackingList";
+import { useState } from "react";
 
-// export default function App() {
-//   const [items, setItems] = useState([]);
-//   function handleAddItem(newItem){
-//     setItems((items) => [...items, newItem]);
-//   }
-//   function handleDeleteItem(id){
-//     setItems((items) => items.filter((item) => item.id !== id));
-//   }
-//   function handleTogglePacked(id){
-//     setItems((items) =>
-//       items.map((item) =>
-//         item.id === id ? { ...item, packed: !item.packed } : item
-//       )
-//     );
-//   }
-//   function handleClearList(){
-//     const confirm = window.confirm("Are you sure you want to clear the list?");
-//     if(!confirm) return;
-//     setItems([]);
-//   }
-//   return (
-//     <div className="app">
-//       <Logo />
-//       <Form onAddItem={handleAddItem} />
-//       <PackingList items={items} onDeleteItem={handleDeleteItem} onTogglePacked={handleTogglePacked} onClearList={handleClearList} />
-//       <Stats item={items} />
-//     </div>
-//   );
-// }
+const tempMovieData = [
+  {
+    imdbID: "tt1375666",
+    Title: "Inception",
+    Year: "2010",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
+  },
+  {
+    imdbID: "tt0133093",
+    Title: "The Matrix",
+    Year: "1999",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg",
+  },
+  {
+    imdbID: "tt6751668",
+    Title: "Parasite",
+    Year: "2019",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg",
+  },
+];
 
-export default function App(){
-  const [tip, setTip] = useState("");
-  const [satisfaction1, setSatisfaction1] = useState(0);
-  const [satisfaction2, setSatisfaction2] = useState(0);
-  function handleSetTip(tip){
-    setTip(tip);
-  }
+const tempWatchedData = [
+  {
+    imdbID: "tt1375666",
+    Title: "Inception",
+    Year: "2010",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
+    runtime: 148,
+    imdbRating: 8.8,
+    userRating: 10,
+  },
+  {
+    imdbID: "tt0088763",
+    Title: "Back to the Future",
+    Year: "1985",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
+    runtime: 116,
+    imdbRating: 8.5,
+    userRating: 9,
+  },
+];
 
-  const averageSatisfaction = (satisfaction1 + satisfaction2) / 2;
-  function handleReset(){
-    setTip("");
-    setSatisfaction1(0);
-    setSatisfaction2(0);
-  }
+const average = (arr) =>
+  arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
+function Navbar() {
+  return (
+    <nav className="nav-bar">
+      <Logo />
+      <SearchBar />
+      <NumResults />
+    </nav>
+  );
+}
 
+function NumResults() {
+  return (
+    <p className="num-results">
+      Found <strong>X</strong> results
+    </p>
+  );
+}
+function Logo() {
+  return (
+    <div className="logo">
+      <span role="img">🍿</span>
+      <h1>usePopcorn</h1>
+    </div>
+  );
+}
+function SearchBar() {
+  const [query, setQuery] = useState("");
+  return (
+    <input
+      className="search"
+      type="text"
+      placeholder="Search movies..."
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+    />
+  );
+}
+function Main() {
+  return (
+    <main className="main">
+      <ListBox />
+      <WatchedBox />
+    </main>
+  );
+}
+
+function ListBox() {
+  const [isOpen1, setIsOpen1] = useState(true);
+  return (
+    <div className="box">
+      <button
+        className="btn-toggle"
+        onClick={() => setIsOpen1((open) => !open)}
+      >
+        {isOpen1 ? "–" : "+"}
+      </button>
+      {isOpen1 && <MovieList />}
+    </div>
+  );
+}
+
+function MovieList() {
+  const [movies, setMovies] = useState(tempMovieData);
+  return (
+    <ul className="list">
+      {movies?.map((movie) => (
+        <Movie key={movie.imdbID} movie={movie} />
+      ))}
+    </ul>
+  );
+}
+
+function Movie({ movie }) {
+  return (
+    <li key={movie.imdbID}>
+      <img src={movie.Poster} alt={`${movie.Title} poster`} />
+      <h3>{movie.Title}</h3>
+      <p>{movie.Year}</p>
+    </li>
+  );
+}
+
+function WatchedBox() {
+  const [isOpen2, setIsOpen2] = useState(true);
+  const [watched, setWatched] = useState(tempWatchedData);
+  return (
+    <div className="box">
+      <button
+        className="btn-toggle"
+        onClick={() => setIsOpen2((open) => !open)}
+      >
+        {isOpen2 ? "–" : "+"}
+      </button>
+      <Summary watched={watched} />
+      {isOpen2 && <WatchedList watched={watched} />}
+    </div>
+  );
+}
+
+function Summary({ watched }) {
+  const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
+  const avgUserRating = average(watched.map((movie) => movie.userRating));
+  const avgRuntime = average(watched.map((movie) => movie.runtime));
+  return (
+    <div className="summary">
+      <h2>Movies you watched</h2>
+      <div>
+        <p>
+          <span>#️⃣</span>
+          <span>{watched.length} movies</span>
+        </p>
+        <p>
+          <span>⭐️</span>
+          <span>{avgImdbRating}</span>
+        </p>
+        <p>
+          <span>🌟</span>
+          <span>{avgUserRating}</span>
+        </p>
+        <p>
+          <span>⏳</span>
+          <span>{avgRuntime} min</span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function WatchedList({ watched }) {
   return (
     <>
-    <InputTip tip={tip} onSetTip={handleSetTip} />
-    <SelectSatisfaction value={satisfaction1} onChange={setSatisfaction1} />
-    <SelectSatisfaction value={satisfaction2} onChange={setSatisfaction2} />
-    <TipCalculator tip={tip} satisfaction={averageSatisfaction} handleReset={handleReset} />
-    <button onClick={handleReset}>Reset</button>
+      <ul className="list">
+        {watched.map((movie) => (
+          <WatchedMovie key={movie.imdbID} movie={movie} />
+        ))}
+      </ul>
     </>
-  )
+  );
 }
-
-function InputTip({ tip, onSetTip }){
-  return <div><span>Input Tip Component</span>
-  <input type="text" placeholder="Type here..." value={tip} onChange={(e) => onSetTip(e.target.value)} />
-  </div>;
+function WatchedMovie({ movie }) {
+  return (
+    <li key={movie.imdbID}>
+      <img src={movie.Poster} alt={`${movie.Title} poster`} />
+      <h3>{movie.Title}</h3>
+      <div>
+        <p>
+          <span>⭐️</span>
+          <span>{movie.imdbRating}</span>
+        </p>
+        <p>
+          <span>🌟</span>
+          <span>{movie.userRating}</span>
+        </p>
+        <p>
+          <span>⏳</span>
+          <span>{movie.runtime} min</span>
+        </p>
+      </div>
+    </li>
+  );
 }
-
-function SelectSatisfaction({ value, onChange }){
-  return <div><span>select the satisfaction</span>
-  <select value={value} onChange={(e) => onChange(Number(e.target.value))}>
-    <option value={20}>Very Satisfied 20%</option>
-    <option value={10}>Satisfied 10%</option>
-    <option value={5}>Neutral 5%</option>
-    <option value={0}>Dissatisfied 0%</option>
-  </select>
-  </div>;
-}
-
-function TipCalculator({ tip, satisfaction }){
-  const tipNum = parseFloat(tip);
-  const satisfactionNum = parseFloat(satisfaction);
-  const validTip = isNaN(tipNum) ? 0 : tipNum;
-  const validSatisfaction = isNaN(satisfactionNum) ? 0 : satisfactionNum;
-  const tipAmount = validTip * (validSatisfaction / 100);
-  return <div>
-    <h2>Tip Calculator</h2>
-    <p>Tip: ${validTip}</p>
-    <p>Satisfaction: {validSatisfaction}%</p>
-    <p>Calculated Tip Amount: ${tipAmount.toFixed(2)}</p>
-  </div>;
+export default function App() {
+  return (
+    <>
+      <Navbar />
+      <Main />
+    </>
+  );
 }
