@@ -42,7 +42,11 @@ export default function App(){
   }
 
   const averageSatisfaction = (satisfaction1 + satisfaction2) / 2;
-
+  function handleReset(){
+    setTip("");
+    setSatisfaction1(0);
+    setSatisfaction2(0);
+  }
 
 
   return (
@@ -50,7 +54,8 @@ export default function App(){
     <InputTip tip={tip} onSetTip={handleSetTip} />
     <SelectSatisfaction value={satisfaction1} onChange={setSatisfaction1} />
     <SelectSatisfaction value={satisfaction2} onChange={setSatisfaction2} />
-    <TipCalculator tip={tip} satisfaction={averageSatisfaction} />
+    <TipCalculator tip={tip} satisfaction={averageSatisfaction} handleReset={handleReset} />
+    <button onClick={handleReset}>Reset</button>
     </>
   )
 }
