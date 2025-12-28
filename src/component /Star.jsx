@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, propTypes } from "react";
 
 const containerStyles = {
   display: "flex",
@@ -17,8 +17,11 @@ export default function StarRating({
   maxStars = 5,
   color = "#fcc419",
   size = 48,
+  className = "",
+  message = "",
+  defaultStars = 0,
 }) {
-  const [userRating, setUserRating] = useState(0);
+  const [userRating, setUserRating] = useState(defaultStars);
   const [hoverRating, setHoverRating] = useState(0);
   const textStyles = {
     lineHeight: "24px",
@@ -28,7 +31,7 @@ export default function StarRating({
   };
 
   return (
-    <div style={containerStyles}>
+    <div style={containerStyles} className={className}>
       <div style={starStyles}>
         {Array.from({ length: maxStars }, (_, i) => (
           <Star
@@ -42,10 +45,26 @@ export default function StarRating({
           />
         ))}
       </div>
-      <p style={textStyles}>{hoverRating || userRating || ""}</p>
+      <p style={textStyles}>
+        {message.length === maxStars
+          ? message[hoverRating - 1 || userRating - 1]
+          : hoverRating || userRating || ""}
+      </p>
     </div>
   );
 }
+
+StarRating.propTypes = {
+  maxStars: propTypes.number,
+  color: propTypes.string,
+  size: propTypes.number,
+  className: propTypes.string,
+  message: propTypes.oneOfType([
+    propTypes.string,
+    propTypes.arrayOf(propTypes.string),
+  ]),
+  defaultStars: propTypes.number,
+};
 
 function Star({ onClick, full = false, onHover, onHoverLeave, size, color }) {
   return (
@@ -87,3 +106,12 @@ function Star({ onClick, full = false, onHover, onHoverLeave, size, color }) {
     </span>
   );
 }
+
+Star.propTypes = {
+  onClick: propTypes.func.isRequired,
+  full: propTypes.bool,
+  onHover: propTypes.func,
+  onHoverLeave: propTypes.func,
+  size: propTypes.number.isRequired,
+  color: propTypes.string.isRequired,
+};
